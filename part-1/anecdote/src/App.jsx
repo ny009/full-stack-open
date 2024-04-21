@@ -11,18 +11,36 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
     'The only way to go fast, is to go well.'
   ]
+  
+  const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
+  const [max, setMax] = useState(0)
+  const [maxIndex, setMaxIndex] = useState(0)
 
   // Referenced From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random 
   // used help of documentation of func example from the above link called "getRandomIntInclusive"
 
   const getRandomNumber = () => Math.floor(Math.random() * (anecdotes.length))
-   
-  const [selected, setSelected] = useState(0)
 
+  const handleVotes = () => {
+    const currentVotes = [...votes]
+    currentVotes[selected] += 1
+    setVotes(currentVotes)
+    setMaxIndex(currentVotes[selected] > max ? selected : maxIndex)
+    setMax(currentVotes[selected] > max ? currentVotes[selected] : max)
+  }
   return (
     <div>
-      {anecdotes[selected]}
-      <div> <button onClick={() => setSelected(getRandomNumber())}>next anecodte</button> </div>
+      <h1> Anecdote of the day</h1>
+      <div>{anecdotes[selected]}</div>
+      <div>has {votes[selected]} votes</div>
+      <div> 
+        <button onClick={handleVotes}> vote</button>
+        <button onClick={() => setSelected(getRandomNumber())}>next anecdote</button> 
+      </div>
+      <h1> Anecdote with most votes</h1>
+      <div> {anecdotes[maxIndex]} </div>
+      <div>has {max} votes</div>
     </div>
   )
 }

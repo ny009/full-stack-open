@@ -1,5 +1,14 @@
 import { useState } from 'react'
 
+const Header = ({name}) => <h1>{name}</h1>
+
+const ShowAnecdote = ({name, index, anecdotes, votes}) => (
+  <>
+    <Header name={name} />
+    <div>{anecdotes[index]}</div>
+    <div>has {votes[index]} votes</div>
+  </>
+)
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -31,16 +40,12 @@ const App = () => {
   }
   return (
     <div>
-      <h1> Anecdote of the day</h1>
-      <div>{anecdotes[selected]}</div>
-      <div>has {votes[selected]} votes</div>
+      <ShowAnecdote name="Anecdote of the day" index={selected} anecdotes={anecdotes} votes={votes}/>
       <div> 
         <button onClick={handleVotes}> vote</button>
         <button onClick={() => setSelected(getRandomNumber())}>next anecdote</button> 
       </div>
-      <h1> Anecdote with most votes</h1>
-      <div> {anecdotes[maxIndex]} </div>
-      <div>has {max} votes</div>
+      <ShowAnecdote name="Anecdote with most votes" index={maxIndex} anecdotes={anecdotes} votes={votes}/>
     </div>
   )
 }

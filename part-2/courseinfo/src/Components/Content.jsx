@@ -2,7 +2,7 @@ import Total from "./Total"
 
 const Part = ({name, exercise}) => <p>{name} {exercise}</p>
 
-export const Content = ({parts}) => {
+const Content = ({parts}) => {
   return (
     <>
       {[...parts].map((part) => 
@@ -12,5 +12,7 @@ export const Content = ({parts}) => {
     </>
   )
 }
+
+export default Content
 
 

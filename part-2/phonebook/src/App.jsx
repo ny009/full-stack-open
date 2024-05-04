@@ -1,35 +1,68 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
-
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import service from './services/names'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState('')
+
+  const showNotification = (newMessage) => {
+    setMessage(newMessage)
+    setTimeout(() => setMessage(''), 2000)
+  }
 
   const addName = (newName, newNumber) => {
-    const isNotNewPerson = persons.find((person) => person.name === newName || person.number === newNumber) 
-    const newPersons = isNotNewPerson ? persons: [...persons, {name: newName , number: newNumber, id: persons.length+1}]
-    setPersons(newPersons)
+    const isNotNewPerson = persons.find((person) => person.name === newName)
+    let newPerson = {name: newName, number: newNumber}
     if (isNotNewPerson) {
-      alert(`${newName} or ${newNumber} is already added to phonebook`)
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        service.update(isNotNewPerson.id, newPerson)
+        .then(res => {
+          setPersons(persons.map(person => person.id === res.id ? {...person, number : res.number}: person))
+          showNotification(`Updated ${newName}'s Number to ${newNumber}`)
+        })
+      }
+      return
+    } 
+    service.create(newPerson).then(res => {
+      setPersons([...persons, res])
+      showNotification(`Added ${newName}`)
+    })
+  }
+
+  const deleteName = (id, name) => {
+    if (window.confirm(`Delete ${name} ?`)) {
+      service.del(id)
+      .then(res => {
+        setPersons(persons.filter(person => (person.id!== res.id)))
+        showNotification(`Deleted ${name}`)
+      })
+      .catch(() => {
+        showNotification(`Information of ${name} has already been removed from server`)
+      })
     }
   }
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then((res) => setPersons(res.data))
+    service.getAll().then(res => setPersons(res))
   }, [])
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter filter={filter} setFilter={setFilter}/>
       <h3>Add a new</h3>
       <PersonForm onSubmit={addName} />
       <h3>Numbers</h3>
-      <Persons persons={persons.filter((person) => person.name.toUpperCase().includes(filter.toUpperCase()))} />
+      <Persons 
+        persons={persons.filter((person) => person.name.toUpperCase().includes(filter.toUpperCase()))} 
+        deleteName={deleteName} 
+      />
     </div>
   )
 }

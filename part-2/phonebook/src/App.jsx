@@ -38,7 +38,7 @@ const App = () => {
     if (window.confirm(`Delete ${name} ?`)) {
       service.del(id)
       .then(res => {
-        setPersons(persons.filter(person => (person.id!== res.id)))
+        setPersons(persons.filter(person => (person.id!== id)))
         showNotification(`Deleted ${name}`)
       })
       .catch(() => {

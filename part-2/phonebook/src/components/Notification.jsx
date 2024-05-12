@@ -1,5 +1,5 @@
 const Notification = ({message}) => {
-  const error = message.includes('Information of')
+  const error = message.includes('Failed')
   if (!message) {
     return
   }

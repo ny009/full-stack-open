@@ -12,7 +12,7 @@ const App = () => {
 
   const showNotification = (newMessage) => {
     setMessage(newMessage)
-    setTimeout(() => setMessage(''), 2000)
+    setTimeout(() => setMessage(''), 5000)
   }
 
   const addName = (newName, newNumber) => {
@@ -25,13 +25,16 @@ const App = () => {
           setPersons(persons.map(person => person.id === res.id ? {...person, number : res.number}: person))
           showNotification(`Updated ${newName}'s Number to ${newNumber}`)
         })
+        .catch(err => showNotification(`Failed: ${err.response.data.error}`))
       }
       return
     } 
-    service.create(newPerson).then(res => {
+    service.create(newPerson)
+    .then(res => {
       setPersons([...persons, res])
       showNotification(`Added ${newName}`)
     })
+    .catch(err => showNotification(`Failed: ${err.response.data.error}`))
   }
 
   const deleteName = (id, name) => {
@@ -42,7 +45,7 @@ const App = () => {
         showNotification(`Deleted ${name}`)
       })
       .catch(() => {
-        showNotification(`Information of ${name} has already been removed from server`)
+        showNotification(`Failed: Information of ${name} has already been removed from server`)
       })
     }
   }
